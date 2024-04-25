@@ -3,18 +3,18 @@ require 'dotenv/load' #load .env file
 require "openssl" #for sha256
 require 'logger' #for logging
 require 'json' #for json parsing
-
-#Sha key for the password hashing
-SHA_KEY = ENV['SHA_KEY'] #SHA key for password hashing
     
 #Session settings
 COOKIE_NAME = ENV['COOKIE_NAME'] || "rack.@session" #Name of the session cookie in the browser
+SESSION_KEY = ENV['SESSION_KEY'] || 'id' #Unique key to store in the session that identifies the user
 SESSION_SECRET = ENV['SESSION_SECRET'] #At least 64 characters
 SESSION_EXPIRE = ENV['SESSION_EXPIRE'] #In seconds
-SESSION_KEY = ENV['SESSION_KEY'] || 'id' #Unique key to store in the session that identifies the user
+
+#Sha key for the password hashing
+SHA_KEY = ENV['SHA_KEY'] #SHA key for password hashing
 
 #Location of the users file
-USERS_LOCATION = ENV['USERS_LOCATION'] || "users.json" #Expected to have 'username' and 'password' keys
+USERS_LOCATION = ENV['USERS_LOCATION'] #Expected to have 'username' and 'password' keys
 
 #Setting up session
 enable :sessions
@@ -34,6 +34,7 @@ class SimpleSessionManager
         SHA_KEY || raise("SHA_KEY not found in .env file")
         SESSION_SECRET || raise("SESSION_SECRET not found in .env file")
         SESSION_EXPIRE || raise("SESSION_EXPIRE not found in .env file")
+        USERS_LOCATION || raise("USERS_LOCATION not found in .env file")
 
         #Setting up logging
         if LOGGING

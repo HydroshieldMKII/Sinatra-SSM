@@ -1,5 +1,4 @@
 # For SimpleSessionManager
-# sudo bundle install
 source 'https://rubygems.org'
 
 gem 'rack-session'
