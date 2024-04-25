@@ -1,0 +1,8 @@
+# For SimpleSessionManager
+# sudo bundle install
+source 'https://rubygems.org'
+
+gem 'rack-session'
+gem 'dotenv'
+gem 'logger'
+gem 'json'
