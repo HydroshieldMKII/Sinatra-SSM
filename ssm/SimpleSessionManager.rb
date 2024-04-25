@@ -17,6 +17,7 @@ SESSION_KEY = ENV['SESSION_KEY'] || 'id' #Unique key to store in the session tha
 USERS_LOCATION = ENV['USERS_LOCATION'] || "users.json" #Expected to have 'username' and 'password' keys
 
 #Setting up session
+enable :sessions
 use Rack::Session::Cookie,  :key => COOKIE_NAME,
                             :secret => SESSION_SECRET,
                             :expire_after => SESSION_EXPIRE
