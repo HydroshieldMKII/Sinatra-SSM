@@ -36,8 +36,12 @@ class SimpleSessionManager
         USERS_LOCATION || raise("USERS_LOCATION not found in .env file")
 
         #Check if the users file exists and it's json
-        raise "Users file not found" unless File.exist?(USERS_LOCATION)
-        JSON.parse(File.read(USERS_LOCATION)) rescue raise "Users file is not JSON"
+        begin
+            raise "Users file not found" unless File.exist?(USERS_LOCATION)
+            JSON.parse(File.read(USERS_LOCATION))
+        rescue Exception => e 
+            raise e
+        end
 
         #Setting up logging
         if LOGGING
@@ -92,7 +96,11 @@ class SimpleSessionManager
 
     #Returns the user object from the users file with corresponding session key
     def whoami
-        users = JSON.parse(File.read(USERS_LOCATION)) rescue raise "Unable to read users file or not JSON"
+        begin
+            users = JSON.parse(File.read(USERS_LOCATION)) 
+        rescue Exception => e
+            raise e
+        end
         return users.find { |user| user[SESSION_KEY] == @session[SESSION_KEY] }
     end
 
