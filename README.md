@@ -64,7 +64,7 @@ The values of the environment variables are as follows:
     end
 
     post '/login' do #! Must contain username and password in basic auth request !#
-        p isSuccess = login!('admin123') #=> Try to login, will set the value to 'admin123' in the unique SESSION_KEY if successful
+        p isSuccess = login!('admin123') #=> Try to login, will set the value to 'admin123' set in the unique SESSION_KEY if successful
     end
 
     post '/logout' do
@@ -84,20 +84,21 @@ The values of the environment variables are as follows:
     end
 
     get '/whoami' do
-        p user = whoami? #=> {'username': '...', 'password': '...'}
+        user = whoami?#=> {username: '...', ...}
+        p user.nil? ? 'Guest' : user.to_json
     end
 
     get '/public' do
-        if authorized?
-            p "Hi. I know you."
-        else
-            p "Hi. We haven't met. <a href='/login'>Login, please.</a>"
-        end
+    if authorized?
+        p "Hi. I know you."
+    else
+        p "Hi. We haven't met. <a href='/login'>Login, please.</a>"
+    end
     end
 
     get '/private' do
-        authorize!
-        p 'Thanks for being logged in.'
+    authorize!
+    p 'Thanks for being logged in.'
     end
 ```
 

@@ -41,7 +41,7 @@ module Sinatra
             if key == SESSION_KEY
                 return authorized? #=> true or false
             else
-                return getSessionData(key) ? true : false
+                return getSessionData!(key) ? true : false
             end
         end
 
@@ -93,10 +93,9 @@ module Sinatra
             return nil if session[SESSION_KEY].nil?
             begin
                 users = JSON.parse(File.read(USERS_LOCATION)) 
-                return users.find { |user| user[SESSION_KEY] == session[SESSION_KEY] }
+                return users.find { |user| user[SESSION_KEY] == session[SESSION_KEY] }.except('password')
             rescue Exception => e
                 raise e
-                return nil
             end
         end
 
@@ -118,10 +117,10 @@ module Sinatra
         def authenticate(username, password)
             begin
                 users = JSON.parse(File.read(USERS_LOCATION))
+                return users.find { |user| user['username'] == username && user['password'] == sha256(password)}
             rescue Exception => e
                 raise e
             end
-            return users.find { |user| user['username'] == username && user['password'] == sha256(password)}
         end
     end
 
