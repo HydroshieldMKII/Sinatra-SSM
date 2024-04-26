@@ -19,7 +19,7 @@ Install the bundler gem and the dependencies
 ```
 
 ## Configuration
-To configure the SimpleSessionManager, you must have a JSON file with the following structure:
+To configure the SimpleSessionManager, you must have a JSON file with at least the following structure:
 ```json
 [
     {
@@ -141,7 +141,7 @@ The values of the environment variables are as follows:
   - `key`: The key of the value to retrieve.
 - Returns: The value associated with the provided key in the session.
 
-### `whoami!`
+### `whoami?`
 - Description: Retrieves the user object from the users file based on the session key. STRICT must be set to true.
 - Returns: The user object corresponding to the `SESSION_KEY`.
 
