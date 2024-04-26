@@ -22,7 +22,7 @@ use Rack::Session::Cookie,  :key => COOKIE_NAME,
 LOGGING = false
 LOG_FILE = ENV['LOG_PATH'] #Path to the log file
 
-#STRICT = true
+STRICT = true #Additionnaly store the session key in the session (recommended), otherwise simply set as 'authorized'
 
 module Sinatra
   module SSM
@@ -66,7 +66,9 @@ module Sinatra
 
             #Credentials are correct, set session
             log("Login success with username '#{username}'", "info") if LOGGING
-            session[SESSION_KEY] = value
+            session[SESSION_KEY] = value if STRICT
+            session[:authorized] = true
+            return true
         end
 
         def logout!
@@ -89,6 +91,7 @@ module Sinatra
         end
 
         def whoami
+            return nil if session[SESSION_KEY].nil? || !STRICT
             begin
                 users = JSON.parse(File.read(USERS_LOCATION)) 
             rescue Exception => e

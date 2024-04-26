@@ -105,15 +105,31 @@ The values of the environment variables are as follows:
 
 ## Functions
 
-### `setSession(value = nil)`
+### `authorized?`
+- Description: Check if the user is logged in.
+- Returns: `true` if the user is logged in, otherwise `false`.
+
+### `authorize!`
+- Description: Redirects to the login page if the user is not logged in, otherwise do nothing.
+
+### `protected!(key = SESSION_KEY)`
+- Description: Return the authentication status of the user. Also can specify a key to check in the session.
+- Parameters:
+  - `request`: The request object containing authentication credentials or specified data.
+  - `key`: The key to check in the session (defaults to `SESSION_KEY`).
+
+### `login!(value = nil)`
 - Description: Checks if a user is logged in and sets the session key if authentication is successful.
 - Parameters:
   - `request`: The request object containing authentication credentials.
   - `value`: Optional value that must be included to set the session. Not required if the session key is already set.
 - Returns: `true` if the user is successfully logged in, otherwise `false`.
 
-### `destroySession`
-- Description: Remove all the session data.
+### `logout!`
+- Description: Remove the session key and authorization.
+
+### `clearSession!`
+- Description: Clear all the session data.
 
 ### `setSessionData(key, value)`
 - Description: Sets a value in the session using the provided key.
@@ -128,14 +144,9 @@ The values of the environment variables are as follows:
 - Returns: The value associated with the provided key in the session.
 
 ### `whoami`
-- Description: Retrieves the user object from the users file based on the session key.
+- Description: Retrieves the user object from the users file based on the session key. STRICT must be set to true.
 - Returns: The user object corresponding to the `SESSION_KEY`.
 
-### `protected!(request = nil, key = SESSION_KEY)`
-- Description: Return the authentication status of the user. Also can specify a key to check in the session.
-- Parameters:
-  - `request`: The request object containing authentication credentials.
-  - `key`: The key to check in the session (defaults to `SESSION_KEY`).
 
     
 
