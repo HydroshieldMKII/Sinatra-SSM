@@ -105,7 +105,6 @@ class SimpleSessionManager
 
     #Logs a message to the log file
     def log(message, type = "info")
-        raise "Logging is not enabled" if !LOGGING
         $logger.warn(message) if type == "warn"
         $logger.info(message) if type == "info"
     end
