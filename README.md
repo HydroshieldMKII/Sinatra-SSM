@@ -23,7 +23,7 @@ To configure the SimpleSessionManager, you must have a JSON file with the follow
 ```json
 [
     {
-        "username": "admin",
+        "username": "admin123",
         "password": "8c6976e5b5410415bde908bd4dee15dfb167a9c873fc4bb8a81f6f2ab448a918"
     },
     {
@@ -44,7 +44,7 @@ You must also configure the .env file with the preloaded environment variables:
 ```
 The values of the environment variables are as follows:
 - COOKIE_NAME: The name of the cookie that will be used to store the session in the browser (eg. 'myapp.session').
-- SESSION_KEY: The unique key that will be used to identify users (eg. 'username' or 'user_id').
+- SESSION_KEY: The unique key that will be used to identify users in your json file (eg. 'username' like in my exmple or 'user_id').
 - SESSION_SECRET: The secret key that will be used to encrypt the session. Must be at least 64 characters.
 - SESSION_EXPIRE: The time in seconds that the session will last.
 - SHA_KEY: The key that will be used to encrypt the passwords in the users.json file.
@@ -62,7 +62,7 @@ The values of the environment variables are as follows:
     end
 
     post '/login' do #! Must contain username and password in basic auth request !#
-        p isSuccess = login!('admin123') #=> Try to login, will set the value to 'admin123' set in the unique SESSION_KEY if successful
+        p isSuccess = login!('admin123') #=> Try to login, will set the value to 'admin123' in the unique SESSION_KEY if successful
     end
 
     post '/logout' do
