@@ -1,5 +1,5 @@
 # Sinatra SSM
- Simple Session Manager is designed for Ruby Sinatra. It use a JSON file to authenticate users, and a cookie to store the session. It also allows to store data in the session cookie.
+ Simple Session Manager designed for Ruby Sinatra. It use a JSON file to authenticate users, and a cookie to store the session. It also allows to store data in the session cookie.
 
 ## Installation
 Clone the repository
@@ -47,9 +47,7 @@ The values of the environment variables are as follows:
 - SESSION_SECRET: The secret key that will be used to encrypt the session. Must be at least 64 characters.
 - SESSION_EXPIRE: The time in seconds that the session will last.
 - SHA_KEY: The key that will be used to encrypt the passwords in the users.json file.
-- USERS_LOCATION: Full path to the location of the users.json file.
-
-
+- USERS_LOCATION: Full path to the location of the users.json file with 'username' and 'password' keys.
 
 ## Usage
 ```ruby
