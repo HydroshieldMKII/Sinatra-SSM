@@ -40,6 +40,7 @@ You must also configure the .env file with the preloaded environment variables:
     SESSION_EXPIRE = 
     SHA_KEY = 
     USERS_PATH =
+    LOGIN_URL =
     LOG_PATH =
 ```
 The values of the environment variables are as follows:
@@ -49,6 +50,7 @@ The values of the environment variables are as follows:
 - SESSION_EXPIRE: The time in seconds that the session will last.
 - SHA_KEY: The key that will be used to encrypt the passwords in the users.json file.
 - USERS_PATH: Full path to the location of the users.json file with 'username' and 'password' keys.
+- LOGIN_URL: Full path to the location of the login page (eg. '/login').
 - LOG_PATH: Full path to the location of the log file.
 
 ## Usage

@@ -12,6 +12,8 @@ SESSION_SECRET = ENV['SESSION_SECRET'] #At least 64 characters
 SESSION_EXPIRE = ENV['SESSION_EXPIRE'].to_i #In seconds
 #Sha key for the password hashing
 SHA_KEY = ENV['SHA_KEY'] #SHA key for password hashing
+#Login settings
+LOGIN_URL = ENV['LOGIN_PATH'] || "/login" #Path to the login page
 #Location of the users file
 USERS_LOCATION = ENV['USERS_PATH'] #Expected to have 'username' and 'password' keys in json format
 #Setting up session
@@ -33,7 +35,7 @@ module Sinatra
         end
 
         def authorize!
-            redirect '/login' unless authorized?
+            redirect LOGIN_URL, 302 unless authorized?
         end
 
         def protected!(key = SESSION_KEY)
