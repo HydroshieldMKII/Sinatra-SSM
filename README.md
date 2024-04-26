@@ -54,42 +54,58 @@ The values of the environment variables are as follows:
 ## Usage
 ```ruby
     require 'sinatra'
-    require './ssm/SimpleSessionManager.rb'
-
-    before do
-        @ssm = SimpleSessionManager.new(session)
-    end
+    require_relative 'ssm'
 
     get '/home' do
-        isLoggedIn = @ssm.protected!(request) #=> Is logged in
-        haveColor = @ssm.protected!( _ , 'favorite_color') #=> Have a favorite color
+        isLoggedIn = protected! #=> Is logged in
+        haveColor = protected!('favorite_color') #=> Have a favorite color set in the cookie
     end
 
-    post '/login' do #Must contain username and password in basic auth
-        isSuccess = @ssm.setSession(request, 'theUsername123') 
+    post '/login' do #! Must contain username and password in basic auth request !#
+        isSuccess = login('myId') #=> Login with the value 'myValue' set in the unique SESSION_KEY
     end
 
     post '/logout' do
-        @ssm.destroySession #=> Destroy the session
+        logout! #=> Destroy the session key and set the authorized flag to false
+    end
+
+    post '/clear' do
+        clearSession! #=> Clear all the session data
     end
 
     post '/save' do
-        @ssm.setSessionData('favorite_color', 'red') #=> Save the color in the cookie
+        setSessionData('favorite_color', 'red') #=> Save the color in the cookie
     end
 
     post '/retrieve' do
-        color = @ssm.getSessionData('favorite_color') #=> 'red'
+        color = getSessionData('favorite_color') #=> 'red'
     end
 
     get '/whoami' do
-        username = @ssm.whoami #=> {username: '...', ...}
+        user = whoami #=> {username: '...', ...}
     end
-    
+
+    get '/public' do
+        if authorized?
+            "Hi. I know you."
+        else
+            "Hi. We haven't met. <a href='/login'>Login, please.</a>"
+        end
+    end
+
+    get '/login' do
+        send_file 'login.html'
+    end
+
+    get '/private' do
+        authorize! #=> redirect to '/login' unless authorized?
+        'Thanks for logging in.'
+    end
 ```
 
 ## Functions
 
-### `setSession(request, value = nil)`
+### `setSession(value = nil)`
 - Description: Checks if a user is logged in and sets the session key if authentication is successful.
 - Parameters:
   - `request`: The request object containing authentication credentials.

@@ -1,33 +1,129 @@
-require 'rack/session/cookie' #@session control
-require 'dotenv/load' #load .env file
-require "openssl" #for sha256
-require 'logger' #for logging
-require 'json' #for json parsing
+require 'sinatra/base'
+require 'rack/session/cookie' #Session control
+require 'dotenv/load' #Load .env file
+require "openssl" #For sha256
+require 'logger' #For logging
+require 'json' #For json parsing
     
 #Session settings
 COOKIE_NAME = ENV['COOKIE_NAME'] || "rack.session" #Name of the session cookie in the browser
 SESSION_KEY = ENV['SESSION_KEY'] || 'username' #Unique key to store in the session that identifies the user
 SESSION_SECRET = ENV['SESSION_SECRET'] #At least 64 characters
 SESSION_EXPIRE = ENV['SESSION_EXPIRE'] #In seconds
-
 #Sha key for the password hashing
 SHA_KEY = ENV['SHA_KEY'] #SHA key for password hashing
-
 #Location of the users file
-USERS_LOCATION = ENV['USERS_PATH'] #Expected to have 'username' and 'password' keys
-
+USERS_LOCATION = ENV['USERS_PATH'] #Expected to have 'username' and 'password' keys in json format
 #Setting up session
-enable :sessions
 use Rack::Session::Cookie,  :key => COOKIE_NAME,
                             :secret => SESSION_SECRET,
                             :expire_after => SESSION_EXPIRE
 
 LOGGING = false
-LOG_FILE = ENV['LOG_PATH'] #File to log to
+LOG_FILE = ENV['LOG_PATH'] #Path to the log file
 
-class SimpleSessionManager
-    def initialize(session)
-        @session = session || raise("No session provided")
+#STRICT = true
+
+module Sinatra
+  module SSM
+    module Helpers
+        def authorized?
+            status = session[:authorized]
+            return status
+        end
+
+        def authorize!
+            redirect '/login' unless authorized?
+        end
+
+        def protected!(key = SESSION_KEY)
+            if data == SESSION_KEY
+                return authorized? #=> true or false
+            else
+                return getSessionData(key) ? true : false
+            end
+        end
+
+        def login!(value)
+            return true unless session[SESSION_KEY].nil?
+
+            #no session, check for basic auth in the request
+            raise "No value provided to set session" if value.nil?
+
+            #check if basic auth is provided
+            auth = Rack::Auth::Basic::Request.new(request.env) 
+            return false unless auth.provided? && auth.basic? && auth.credentials
+
+            #Check if the credentials are correct
+            username, password = auth.credentials
+            userInfo = authenticate(username, password)
+
+            #Credentials are incorrect
+            if userInfo.nil?
+                log("Auth failed with username '#{username}'", "warn") if LOGGING
+                return false
+            end
+
+            #Credentials are correct, set session
+            log("Login success with username '#{username}'", "info") if LOGGING
+            session[SESSION_KEY] = value
+        end
+
+        def logout!
+            session[SESSION_KEY] = nil
+            session[:authorized] = false
+        end
+
+        def clearSession!
+            session.clear
+        end
+
+        def setSessionData(key, value)
+            raise "No key provided" if key.nil?
+            raise "No value provided" if value.nil?
+            session[data] = value
+        end
+
+        def getSessionData(key)
+            return session[key]
+        end
+
+        def whoami
+            begin
+                users = JSON.parse(File.read(USERS_LOCATION)) 
+            rescue Exception => e
+                raise e
+            end
+            return users.find { |user| user[SESSION_KEY] == @session[SESSION_KEY] }
+        end
+
+        private
+
+        #Logs a message to the log file
+        def log(message, type = "info")
+            $logger.warn(message) if type == "warn"
+            $logger.info(message) if type == "info"
+        end
+
+        #Hashes a string using sha256
+        def sha256(value)
+            nil if value.nil? || value.empty?
+            OpenSSL::HMAC.hexdigest("sha256", SHA_KEY, value)
+        end
+
+        # Returns corresponding user if username and password are correct
+        def authenticate(username, password)
+            begin
+                users = JSON.parse(File.read(USERS_LOCATION))
+            rescue Exception => e
+                raise e
+            end
+            return users.find { |user| user['username'] == username && user['password'] == sha256(password)}
+        end
+    end
+
+    def self.registered(app)
+        app.helpers SSM::Helpers
 
         #Verification of core settings
         SHA_KEY || raise("SHA_KEY not found in .env file")
@@ -37,9 +133,9 @@ class SimpleSessionManager
 
         #Check if the users file exists and it's json
         begin
-            raise "Users file not found" unless File.exist?(USERS_LOCATION)
+            raise "Users file not found at '#{USERS_LOCATION}'" unless File.exist?(USERS_LOCATION)
             JSON.parse(File.read(USERS_LOCATION))
-        rescue Exception => e 
+        rescue Exception => e
             raise e
         end
 
@@ -51,85 +147,7 @@ class SimpleSessionManager
             $logger = Logger.new(log_file)
         end
     end
+  end
 
-    #Return true if the user is successfuly logged in, false otherwise
-    def setSession(request, value = nil)
-        #no session, check for basic auth in the request
-        if (@session[SESSION_KEY].nil?)
-            raise "No request provided" if request.nil?
-            raise "No value provided" if value.nil?
-
-            #check if basic auth is provided
-            auth = Rack::Auth::Basic::Request.new(request.env) 
-            return false unless auth.provided? && auth.basic? && auth.credentials
-        
-            username, password = auth.credentials
-            userInfo = authenticate(username, password)
-        
-            if userInfo.nil?
-                log("Auth failed with username '#{username}'", "warn") if LOGGING
-                return false
-            end
-        
-            #Credentials are correct or user found, set @session
-            log("Login success with username '#{username}'", "info") if LOGGING
-            @session[SESSION_KEY] = value
-        end
-        return true
-    end
-
-    def destroySession
-        @session.clear
-    end
-
-    #Sets a value in the session
-    def setSessionData(key, value)
-        raise "No key provided" if key.nil?
-        raise "No value provided" if value.nil?
-        @session[data] = value
-    end
-
-    #Returns a value in the session
-    def getSessionData(key)
-        return @session[key]
-    end
-
-    #Returns the user object from the users file with corresponding session key
-    def whoami
-        begin
-            users = JSON.parse(File.read(USERS_LOCATION)) 
-        rescue Exception => e
-            raise e
-        end
-        return users.find { |user| user[SESSION_KEY] == @session[SESSION_KEY] }
-    end
-
-    #return false if the user key is not set, session key by default
-    def protected!(request = nil, key = SESSION_KEY)
-        if data = SESSION_KEY
-            return setSession(request)
-        else
-            return getSessionData(key) ? true : false
-        end
-    end
-
-    private
-
-    #Logs a message to the log file
-    def log(message, type = "info")
-        $logger.warn(message) if type == "warn"
-        $logger.info(message) if type == "info"
-    end
-
-    #Hashes a string using sha256
-    def sha256(value)
-        nil if value.nil? || value.empty?
-        OpenSSL::HMAC.hexdigest("sha256", SHA_KEY, value)
-    end
-
-    # Returns corresponding user if username and password are correct
-    def authenticate(username, password)
-        users = JSON.parse(File.read(USERS_LOCATION))
-        return users.find { |user| user['username'] == username && user['password'] == sha256(password)}
-    end
+  register SSM
 end
