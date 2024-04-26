@@ -1,5 +1,5 @@
 # Sinatra SSM
- Simple Session Manager designed for Ruby Sinatra. It use a JSON file to authenticate users, and a cookie to store the session. It also allows to store data in the session cookie.
+ Simple Session Manager designed for Ruby Sinatra. It use a JSON file to authenticate users, and a cookie to store the session. It also allows to store generic data in the session cookie.
 
 ## Installation
 Clone the repository
@@ -89,16 +89,16 @@ The values of the environment variables are as follows:
     end
 
     get '/public' do
-    if authorized?
-        p "Hi. I know you."
-    else
-        p "Hi. We haven't met. <a href='/login'>Login, please.</a>"
-    end
+        if authorized?
+            p "Hi. I know you."
+        else
+            p "Hi. We haven't met. <a href='/login'>Login, please.</a>"
+        end
     end
 
     get '/private' do
-    authorize!
-    p 'Thanks for being logged in.'
+        authorize!
+        p 'You are logged in!'
     end
 ```
 
@@ -145,6 +145,21 @@ The values of the environment variables are as follows:
 ### `whoami?`
 - Description: Retrieves the user object from the users file based on the session key. STRICT must be set to true.
 - Returns: The user object corresponding to the `SESSION_KEY`.
+
+### `addUsers!(username, password)`
+- Description: Add a user to the users file.
+- Parameters:
+  - `username`: The username of the user to add.
+  - `password`: The password of the user to add.
+  
+
+## Common Errors
+- The login doesnt work: Make sure that the users.json file is correctly configured and that the SHA_KEY is correct (must be the same that was used to encrypt the password). Also make sure that the request contains the username and password in the basic auth header.
+
+- Variable not found in the .env file: Make sure that the .env file is correctly configured and that the environment variables are correctly set. Some of the variables are required for the correct operation of the SimpleSessionManager. Non required variables can be left empty and will have default value.
+
+- The session is not being stored: Make sure that the that the SESSION_SECRET is correctly set. Also make sure that the SESSION_EXPIRE is correctly set. Using private browsing, incognito mode or clearing browser cache can also cause the session to not be stored.
+
 
 
     

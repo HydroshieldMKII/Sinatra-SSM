@@ -10,21 +10,24 @@ COOKIE_NAME = ENV['COOKIE_NAME'] || "rack.session" #Name of the session cookie i
 SESSION_KEY = ENV['SESSION_KEY'] || "username" #Unique key to store in the session that identifies the user
 SESSION_SECRET = ENV['SESSION_SECRET'] #At least 64 characters
 SESSION_EXPIRE = ENV['SESSION_EXPIRE'].to_i #In seconds
+
 #Sha key for the password hashing
 SHA_KEY = ENV['SHA_KEY'] #SHA key for password hashing
+
 #Login settings
 LOGIN_URL = ENV['LOGIN_PATH'] || "/login" #Path to the login page
+
 #Location of the users file
 USERS_LOCATION = ENV['USERS_PATH'] #Expected to have 'username' and 'password' keys in json format
+
 #Setting up session
 use Rack::Session::Cookie,  :key => COOKIE_NAME,
                             :secret => SESSION_SECRET,
                             :expire_after => SESSION_EXPIRE
 
+#Logging settings
 LOGGING = false
 LOG_FILE = ENV['LOG_PATH'] #Path to the log file
-
-STRICT = true #Additionnaly store the session key in the session (recommended), otherwise simply set as 'authorized'
 
 module Sinatra
   module SSM
@@ -67,7 +70,7 @@ module Sinatra
 
             #Credentials are correct, set session
             log("Login success with username '#{username}'", "info") if LOGGING
-            session[SESSION_KEY] = value if STRICT
+            session[SESSION_KEY] = value
             return true
         end
 
@@ -96,6 +99,19 @@ module Sinatra
                 return users.find { |user| user[SESSION_KEY] == session[SESSION_KEY] }.except('password')
             rescue Exception => e
                 raise e
+            end
+        end
+
+        def addUsers!(username, password)
+            raise "No username provided" if username.nil?
+            raise "No password provided" if password.nil?
+            begin
+                users = JSON.parse(File.read(USERS_LOCATION))
+                users << { 'username' => username, 'password' => sha256(password) }
+                File.write(USERS_LOCATION, users.to_json)
+                return true
+            rescue Exception => e
+                return false
             end
         end
 
