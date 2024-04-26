@@ -79,7 +79,7 @@ The values of the environment variables are as follows:
         color = @ssm.getSessionData('favorite_color') #=> 'red'
     end
 
-    get '/whoami' do #Must have users data in a JSON file
+    get '/whoami' do
         username = @ssm.getUser #=> {username: '...', ...}
     end
     
@@ -111,7 +111,7 @@ The values of the environment variables are as follows:
 
 ### `getUser`
 - Description: Retrieves the user object from the users file based on the session key.
-- Returns: The user object corresponding to the session key.
+- Returns: The user object corresponding to the `SESSION_KEY`.
 
 ### `protected!(request = nil, key = SESSION_KEY)`
 - Description: Return the authentication status of the user. Also can specify a key to check in the session.
