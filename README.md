@@ -151,7 +151,8 @@ The values of the environment variables are as follows:
 - Parameters:
   - `username`: The username of the user to add.
   - `password`: The password of the user to add.
-  
+- Returns: `true` if the user was successfully added, otherwise throw an error if couldnt read the file.
+
 
 ## Common Errors
 - The login doesnt work: Make sure that the users.json file is correctly configured and that the SHA_KEY is correct (must be the same that was used to encrypt the password). Also make sure that the request contains the username and password in the basic auth header.

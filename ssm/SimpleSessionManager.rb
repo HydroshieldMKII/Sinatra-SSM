@@ -111,7 +111,7 @@ module Sinatra
                 File.write(USERS_LOCATION, users.to_json)
                 return true
             rescue Exception => e
-                return false
+                raise e
             end
         end
 
