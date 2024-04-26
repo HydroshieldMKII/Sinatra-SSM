@@ -14,7 +14,7 @@ SESSION_EXPIRE = ENV['SESSION_EXPIRE'] #In seconds
 SHA_KEY = ENV['SHA_KEY'] #SHA key for password hashing
 
 #Location of the users file
-USERS_LOCATION = ENV['USERS_LOCATION'] #Expected to have 'username' and 'password' keys
+USERS_LOCATION = ENV['USERS_PATH'] #Expected to have 'username' and 'password' keys
 
 #Setting up session
 enable :sessions
@@ -22,9 +22,8 @@ use Rack::Session::Cookie,  :key => COOKIE_NAME,
                             :secret => SESSION_SECRET,
                             :expire_after => SESSION_EXPIRE
 
-#STRICT = true
 LOGGING = false
-LOG_FILE = ENV['LOG_FILE'] #File to log to
+LOG_FILE = ENV['LOG_PATH'] #File to log to
 
 class SimpleSessionManager
     def initialize(session)
@@ -35,13 +34,14 @@ class SimpleSessionManager
         SESSION_SECRET || raise("SESSION_SECRET not found in .env file")
         SESSION_EXPIRE || raise("SESSION_EXPIRE not found in .env file")
         USERS_LOCATION || raise("USERS_LOCATION not found in .env file")
+
         #Check if the users file exists and it's json
         raise "Users file not found" unless File.exist?(USERS_LOCATION)
         JSON.parse(File.read(USERS_LOCATION)) rescue raise "Users file is not JSON"
 
-
         #Setting up logging
         if LOGGING
+            LOG_FILE || raise("LOG_PATH not found in .env file")
             log_file = File.new(LOG_FILE, 'a+')
             log_file.sync = true
             $logger = Logger.new(log_file)

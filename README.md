@@ -39,7 +39,8 @@ You must also configure the .env file with the preloaded environment variables:
     SESSION_SECRET = 
     SESSION_EXPIRE = 
     SHA_KEY = 
-    USERS_LOCATION =
+    USERS_PATH =
+    LOG_PATH =
 ```
 The values of the environment variables are as follows:
 - COOKIE_NAME: The name of the cookie that will be used to store the session in the browser (eg. 'myapp.session').
@@ -47,7 +48,8 @@ The values of the environment variables are as follows:
 - SESSION_SECRET: The secret key that will be used to encrypt the session. Must be at least 64 characters.
 - SESSION_EXPIRE: The time in seconds that the session will last.
 - SHA_KEY: The key that will be used to encrypt the passwords in the users.json file.
-- USERS_LOCATION: Full path to the location of the users.json file with 'username' and 'password' keys.
+- USERS_PATH: Full path to the location of the users.json file with 'username' and 'password' keys.
+- LOG_PATH: Full path to the location of the log file.
 
 ## Usage
 ```ruby
