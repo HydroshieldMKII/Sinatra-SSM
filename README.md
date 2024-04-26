@@ -80,7 +80,7 @@ The values of the environment variables are as follows:
     end
 
     get '/whoami' do
-        username = @ssm.getUser #=> {username: '...', ...}
+        username = @ssm.whoami #=> {username: '...', ...}
     end
     
 ```

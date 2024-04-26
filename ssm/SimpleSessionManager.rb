@@ -86,7 +86,7 @@ class SimpleSessionManager
     end
 
     #Returns the user object from the users file with corresponding session key
-    def getUser
+    def whoami
         users = JSON.parse(File.read(USERS_LOCATION)) rescue raise "Unable to read users file or not JSON"
         return users.find { |user| user[SESSION_KEY] == @session[SESSION_KEY] }
     end
