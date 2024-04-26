@@ -5,8 +5,8 @@ require 'logger' #for logging
 require 'json' #for json parsing
     
 #Session settings
-COOKIE_NAME = ENV['COOKIE_NAME'] || "rack.@session" #Name of the session cookie in the browser
-SESSION_KEY = ENV['SESSION_KEY'] || 'id' #Unique key to store in the session that identifies the user
+COOKIE_NAME = ENV['COOKIE_NAME'] || "rack.session" #Name of the session cookie in the browser
+SESSION_KEY = ENV['SESSION_KEY'] || 'username' #Unique key to store in the session that identifies the user
 SESSION_SECRET = ENV['SESSION_SECRET'] #At least 64 characters
 SESSION_EXPIRE = ENV['SESSION_EXPIRE'] #In seconds
 
@@ -96,7 +96,7 @@ class SimpleSessionManager
         return users.find { |user| user[SESSION_KEY] == @session[SESSION_KEY] }
     end
 
-    #Halt the request if the user key is not set, session key by default
+    #return false if the user key is not set, session key by default
     def protected!(request = nil, key = SESSION_KEY)
         if data = SESSION_KEY
             return setSession(request)
