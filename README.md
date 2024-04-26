@@ -62,7 +62,7 @@ The values of the environment variables are as follows:
 
     get '/home' do
         isLoggedIn = @ssm.protected!(request) #=> Is logged in
-        haveColor = @ssm.protected!( _ , 'color') #=> Have a color
+        haveColor = @ssm.protected!( _ , 'favorite_color') #=> Have a favorite color
     end
 
     post '/login' do #Must contain username and password in basic auth
