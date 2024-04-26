@@ -95,9 +95,9 @@ class SimpleSessionManager
     #Halt the request if the user key is not set, session key by default
     def protected!(request = nil, key = SESSION_KEY)
         if data = SESSION_KEY
-            halt [401,{'Content-Type' => 'text/plain'},"Not authorized\n"] unless setSession(request)
+            return setSession(request)
         else
-            halt [401,{'Content-Type' => 'text/plain'},"Not authorized\n"] unless getSessionData(key)
+            return getSessionData(key) ? true : false
         end
     end
 
