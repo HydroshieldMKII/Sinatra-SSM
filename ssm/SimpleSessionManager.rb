@@ -35,6 +35,10 @@ class SimpleSessionManager
         SESSION_SECRET || raise("SESSION_SECRET not found in .env file")
         SESSION_EXPIRE || raise("SESSION_EXPIRE not found in .env file")
         USERS_LOCATION || raise("USERS_LOCATION not found in .env file")
+        #Check if the users file exists and it's json
+        raise "Users file not found" unless File.exist?(USERS_LOCATION)
+        JSON.parse(File.read(USERS_LOCATION)) rescue raise "Users file is not JSON"
+
 
         #Setting up logging
         if LOGGING
