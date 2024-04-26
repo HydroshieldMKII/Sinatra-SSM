@@ -131,19 +131,19 @@ The values of the environment variables are as follows:
 ### `clearSession!`
 - Description: Clear all the session data.
 
-### `setSessionData(key, value)`
+### `setSessionData!(key, value)`
 - Description: Sets a value in the session using the provided key.
 - Parameters:
   - `key`: The key under which to store the value.
   - `value`: Value to set in the session.
 
-### `getSessionData(key)`
+### `getSessionData!(key)`
 - Description: Retrieves a value from the session using the provided key.
 - Parameters:
   - `key`: The key of the value to retrieve.
 - Returns: The value associated with the provided key in the session.
 
-### `whoami`
+### `whoami!`
 - Description: Retrieves the user object from the users file based on the session key. STRICT must be set to true.
 - Returns: The user object corresponding to the `SESSION_KEY`.
 

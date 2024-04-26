@@ -29,7 +29,7 @@ module Sinatra
     module Helpers
         def authorized?
             status = session[:authorized]
-            return status
+            return status ? true : false
         end
 
         def authorize!
@@ -37,7 +37,7 @@ module Sinatra
         end
 
         def protected!(key = SESSION_KEY)
-            if data == SESSION_KEY
+            if key == SESSION_KEY
                 return authorized? #=> true or false
             else
                 return getSessionData(key) ? true : false
@@ -80,17 +80,17 @@ module Sinatra
             session.clear
         end
 
-        def setSessionData(key, value)
+        def setSessionData!(key, value)
             raise "No key provided" if key.nil?
             raise "No value provided" if value.nil?
-            session[data] = value
+            session[key] = value
         end
 
-        def getSessionData(key)
+        def getSessionData!(key)
             return session[key]
         end
 
-        def whoami
+        def whoami!
             return nil if session[SESSION_KEY].nil? || !STRICT
             begin
                 users = JSON.parse(File.read(USERS_LOCATION)) 
