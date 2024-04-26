@@ -49,6 +49,7 @@ class SimpleSessionManager
         #no session, check for basic auth in the request
         if (@session[SESSION_KEY].nil?)
             raise "No request provided" if request.nil?
+            raise "No value provided" if value.nil?
 
             #check if basic auth is provided
             auth = Rack::Auth::Basic::Request.new(request.env) 
