@@ -97,7 +97,7 @@ The values of the environment variables are as follows:
 ### `destroySession`
 - Description: Remove all the session data.
 
-### `setSessionData(key, value = nil)`
+### `setSessionData(key, value)`
 - Description: Sets a value in the session using the provided key.
 - Parameters:
   - `key`: The key under which to store the value.
@@ -109,7 +109,7 @@ The values of the environment variables are as follows:
   - `key`: The key of the value to retrieve.
 - Returns: The value associated with the provided key in the session.
 
-### `getUser`
+### `whoami`
 - Description: Retrieves the user object from the users file based on the session key.
 - Returns: The user object corresponding to the `SESSION_KEY`.
 
