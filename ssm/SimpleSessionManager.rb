@@ -28,7 +28,7 @@ module Sinatra
   module SSM
     module Helpers
         def authorized?
-            status = session[:authorized]
+            status = session['authorized']
             return status ? true : false
         end
 
@@ -67,13 +67,13 @@ module Sinatra
             #Credentials are correct, set session
             log("Login success with username '#{username}'", "info") if LOGGING
             session[SESSION_KEY] = value if STRICT
-            session[:authorized] = true
+            session['authorized'] = true
             return true
         end
 
         def logout!
             session[SESSION_KEY] = nil
-            session[:authorized] = false
+            session['authorized'] = false
         end
 
         def clearSession!
@@ -83,6 +83,7 @@ module Sinatra
         def setSessionData!(key, value)
             raise "No key provided" if key.nil?
             raise "No value provided" if value.nil?
+            p session
             session[key] = value
         end
 
