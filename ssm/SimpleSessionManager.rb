@@ -74,8 +74,9 @@ class SimpleSessionManager
     end
 
     #Sets a value in the session
-    def setSessionData(key, value = nil)
+    def setSessionData(key, value)
         raise "No key provided" if key.nil?
+        raise "No value provided" if value.nil?
         @session[data] = value
     end
 

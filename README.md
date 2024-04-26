@@ -84,5 +84,40 @@ The values of the environment variables are as follows:
     end
     
 ```
+
+## Functions
+
+### `setSession(request, value = nil)`
+- Description: Checks if a user is logged in and sets the session key if authentication is successful.
+- Parameters:
+  - `request`: The request object containing authentication credentials.
+  - `value`: Optional value that must be included to set the session. Not required if the session key is already set.
+- Returns: `true` if the user is successfully logged in, otherwise `false`.
+
+### `destroySession`
+- Description: Remove all the session data.
+
+### `setSessionData(key, value = nil)`
+- Description: Sets a value in the session using the provided key.
+- Parameters:
+  - `key`: The key under which to store the value.
+  - `value`: Value to set in the session.
+
+### `getSessionData(key)`
+- Description: Retrieves a value from the session using the provided key.
+- Parameters:
+  - `key`: The key of the value to retrieve.
+- Returns: The value associated with the provided key in the session.
+
+### `getUser`
+- Description: Retrieves the user object from the users file based on the session key.
+- Returns: The user object corresponding to the session key.
+
+### `protected!(request = nil, key = SESSION_KEY)`
+- Description: Return the authentication status of the user. Also can specify a key to check in the session.
+- Parameters:
+  - `request`: The request object containing authentication credentials.
+  - `key`: The key to check in the session (defaults to `SESSION_KEY`).
+
     
 
