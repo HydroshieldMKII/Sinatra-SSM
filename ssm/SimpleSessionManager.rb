@@ -7,9 +7,9 @@ require 'json' #For json parsing
     
 #Session settings
 COOKIE_NAME = ENV['COOKIE_NAME'] || "rack.session" #Name of the session cookie in the browser
-SESSION_KEY = ENV['SESSION_KEY'] || 'username' #Unique key to store in the session that identifies the user
+SESSION_KEY = ENV['SESSION_KEY'] || "username" #Unique key to store in the session that identifies the user
 SESSION_SECRET = ENV['SESSION_SECRET'] #At least 64 characters
-SESSION_EXPIRE = ENV['SESSION_EXPIRE'] #In seconds
+SESSION_EXPIRE = ENV['SESSION_EXPIRE'].to_i #In seconds
 #Sha key for the password hashing
 SHA_KEY = ENV['SHA_KEY'] #SHA key for password hashing
 #Location of the users file
@@ -83,7 +83,6 @@ module Sinatra
         def setSessionData!(key, value)
             raise "No key provided" if key.nil?
             raise "No value provided" if value.nil?
-            p session
             session[key] = value
         end
 
@@ -91,14 +90,15 @@ module Sinatra
             return session[key]
         end
 
-        def whoami!
-            return nil if session[SESSION_KEY].nil? || !STRICT
+        def whoami?
+            return nil if session[SESSION_KEY].nil?
             begin
                 users = JSON.parse(File.read(USERS_LOCATION)) 
+                return users.find { |user| user[SESSION_KEY] == session[SESSION_KEY] }
             rescue Exception => e
                 raise e
+                return nil
             end
-            return users.find { |user| user[SESSION_KEY] == @session[SESSION_KEY] }
         end
 
         private

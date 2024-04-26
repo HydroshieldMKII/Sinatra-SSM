@@ -57,12 +57,12 @@ The values of the environment variables are as follows:
     require_relative 'ssm'
 
     get '/home' do
-        isLoggedIn = protected! #=> Is logged in
-        haveColor = protected!('favorite_color') #=> Have a favorite color set in the cookie
+        p isLoggedIn = protected! #=> Is logged in
+        p haveColor = protected!('favorite_color') #=> Have a favorite color set in the cookie
     end
 
     post '/login' do #! Must contain username and password in basic auth request !#
-        isSuccess = login('myId') #=> Login with the value 'myValue' set in the unique SESSION_KEY
+        p isSuccess = login!('admin123') #=> Try to login, will set the value to 'admin123' set in the unique SESSION_KEY if successful
     end
 
     post '/logout' do
@@ -74,32 +74,28 @@ The values of the environment variables are as follows:
     end
 
     post '/save' do
-        setSessionData('favorite_color', 'red') #=> Save the color in the cookie
+        setSessionData!('favorite_color', 'red') #=> Save the color in the cookie
     end
 
     post '/retrieve' do
-        color = getSessionData('favorite_color') #=> 'red'
+        p color = getSessionData!('favorite_color') #=> 'red'
     end
 
     get '/whoami' do
-        user = whoami #=> {username: '...', ...}
+        p user = whoami? #=> {'username': '...', 'password': '...'}
     end
 
     get '/public' do
         if authorized?
-            "Hi. I know you."
+            p "Hi. I know you."
         else
-            "Hi. We haven't met. <a href='/login'>Login, please.</a>"
+            p "Hi. We haven't met. <a href='/login'>Login, please.</a>"
         end
     end
 
-    get '/login' do
-        send_file 'login.html'
-    end
-
     get '/private' do
-        authorize! #=> redirect to '/login' unless authorized?
-        'Thanks for logging in.'
+        authorize!
+        p 'Thanks for being logged in.'
     end
 ```
 
