@@ -1,5 +1,5 @@
 # Sinatra SSM
- A simple Session Manager designed for Ruby Sinatra
+ Simple Session Manager is designed for Ruby Sinatra. It use a JSON file to authenticate users, and a cookie to store the session. It also allows to store data in the session cookie.
 
 ## Installation
 Clone the repository
@@ -61,8 +61,8 @@ The values of the environment variables are as follows:
     end
 
     get '/home' do
-        isLoggedIn = @ssm.protected!( _ , request) #=> Is logged in
-        haveColor = @ssm.protected!( 'color' , request) #=> Have a color
+        isLoggedIn = @ssm.protected!(request) #=> Is logged in
+        haveColor = @ssm.protected!( _ , 'color') #=> Have a color
     end
 
     post '/login' do #Must contain username and password in basic auth
@@ -70,11 +70,11 @@ The values of the environment variables are as follows:
     end
 
     post '/logout' do
-        @ssm.destroySession
+        @ssm.destroySession #=> Destroy the session
     end
 
     post '/save' do
-        @ssm.setSessionData('favorite_color', 'red')
+        @ssm.setSessionData('favorite_color', 'red') #=> Save the color in the cookie
     end
 
     post '/retrieve' do

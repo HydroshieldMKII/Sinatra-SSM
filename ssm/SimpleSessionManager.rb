@@ -69,6 +69,10 @@ class SimpleSessionManager
         return true
     end
 
+    def destroySession
+        @session.clear
+    end
+
     #Sets a value in the session
     def setSessionData(key, value = nil)
         raise "No key provided" if key.nil?
@@ -87,7 +91,7 @@ class SimpleSessionManager
     end
 
     #Halt the request if the user key is not set, session key by default
-    def protected!(key = SESSION_KEY, request = nil)
+    def protected!(request = nil, key = SESSION_KEY)
         if data = SESSION_KEY
             halt [401,{'Content-Type' => 'text/plain'},"Not authorized\n"] unless setSession(request)
         else
