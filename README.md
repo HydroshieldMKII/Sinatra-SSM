@@ -155,11 +155,11 @@ The values of the environment variables are as follows:
 
 
 ## Common Errors
-- The login doesnt work: Make sure that the users.json file is correctly configured and that the SHA_KEY is correct (must be the same that was used to encrypt the password). Also make sure that the request contains the username and password in the basic auth header.
+- The login doesnt work: Make sure that the `users.json` file is correctly configured and that the `SHA_KEY` is correct (must be the same key that was used to encrypt the current password). Also make sure that the request contains the username and password in the basic auth header.
 
-- Variable not found in the .env file: Make sure that the .env file is correctly configured and that the environment variables are correctly set. Some of the variables are required for the correct operation of the SimpleSessionManager. Non required variables can be left empty and will have default value.
+- Variable not found in the .env file: Make sure that the .env file is correctly configured at the root of the project and that the environment variables are correctly set. Some of the variables are required for the correct operation of the SimpleSessionManager. Non required variables can be left empty and will have default value.
 
-- The session is not being stored: Make sure that the that the SESSION_SECRET is correctly set. Also make sure that the SESSION_EXPIRE is correctly set. Using private browsing, incognito mode or clearing browser cache can also cause the session to not be stored.
+- The session is not being stored: Make sure that the that the `SESSION_SECRET` is correctly set. Also make sure that the `SESSION_EXPIRE` is correctly set. Using private browsing, incognito mode or clearing browser cache can also cause the session to not be stored.
 
 
 
