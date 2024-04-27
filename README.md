@@ -68,7 +68,7 @@ The values of the environment variables are as follows:
     end
 
     post '/logout' do
-        logout! #=> Destroy the session key and set the authorized flag to false
+        logout! #=> Destroy the session key
     end
 
     post '/clear' do
@@ -125,7 +125,7 @@ The values of the environment variables are as follows:
 - Returns: `true` if the user is successfully logged in, otherwise `false`.
 
 ### `logout!`
-- Description: Remove the session key and authorization.
+- Description: Remove the session key.
 
 ### `clearSession!`
 - Description: Clear all the session data.
