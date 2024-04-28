@@ -84,7 +84,7 @@ The values of the environment variables are as follows:
     end
 
     get '/whoami' do
-        user = whoami?#=> {username: '...', ...}
+        user = whoami? #=> {username: '...', ...}
         p user.nil? ? 'Guest' : user.to_json
     end
 
