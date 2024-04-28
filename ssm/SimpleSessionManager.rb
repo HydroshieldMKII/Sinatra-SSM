@@ -112,6 +112,7 @@ module Sinatra
         def add_user!(user_data) #=> { 'username' => '...', 'password' => '...' }
             raise "No data provided" if user_data.nil?
             raise "The data provided is not a hash" unless user_data.is_a? Hash
+            raise "No #{SESSION_KEY} provided" if user_data[SESSION_KEY].nil?
             raise "No username provided" if user_data[:username].nil?
             raise "No password provided" if user_data[:password].nil?
 
