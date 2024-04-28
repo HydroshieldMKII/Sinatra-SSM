@@ -112,12 +112,16 @@ module Sinatra
         def add_user!(user_data) #=> { 'username' => '...', 'password' => '...' }
             raise "No data provided" if user_data.nil?
             raise "The data provided is not a hash" unless user_data.is_a? Hash
+            raise "No username provided" if user_data[:username].nil?
+            raise "No password provided" if user_data[:password].nil?
 
-            username = user_data['username'] || raise "No username provided"
-            password = user_data['password'] || raise "No password provided"
+            username = user_data[:username] 
+            password = user_data[:password]
 
             begin
                 users = JSON.parse(File.read(USERS_LOCATION))
+                raise "Username already exists" if users.find { |user| user['username'] == username }
+
                 if STRICT_PASSWORD
                     raise "Password does not meet the requirements" unless password.length >= PWD_MIN_PASSWORD_LENGTH
                     raise "Password does not meet the requirements" unless password.count("0-9") >= PWD_MIN_NUMBERS
@@ -127,7 +131,7 @@ module Sinatra
                     s_password = sha256(password)
                 end
 
-                user_data['password'] = s_password
+                user_data[:password] = s_password
 
                 users << user_data
                 File.write(USERS_LOCATION, users.to_json)
