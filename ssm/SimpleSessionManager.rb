@@ -203,6 +203,8 @@ module Sinatra
         begin
             raise "Users file not found at '#{USERS_LOCATION}'" unless File.exist?(USERS_LOCATION)
             JSON.parse(File.read(USERS_LOCATION)) #Check if the file is json
+        rescue JSON::ParserError => e
+            raise "Users file at '#{USERS_LOCATION}' is not in json format"
         rescue Exception => e
             raise e
         end
