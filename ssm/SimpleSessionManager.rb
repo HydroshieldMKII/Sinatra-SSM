@@ -78,17 +78,17 @@ module Sinatra
             session[SESSION_KEY] = nil
         end
 
-        def clearSession!
+        def clear_session!
             session.clear
         end
 
-        def setSessionData!(key, value)
+        def set_session_data!(key, value)
             raise "No key provided" if key.nil?
             raise "No value provided" if value.nil?
             session[key] = value
         end
 
-        def getSessionData!(key)
+        def get_session_data!(key)
             return session[key]
         end
 
@@ -102,12 +102,20 @@ module Sinatra
             end
         end
 
-        def addUsers!(username, password)
-            raise "No username provided" if username.nil?
-            raise "No password provided" if password.nil?
+        def add_user!(user_data)
+            raise "No data provided" if user_data.nil?
+            raise "The data provided is not a hash" unless user_data.is_a? Hash
+            raise "No password provided" if user_data['password'].nil?
+
             begin
+                #Check if the user already exists
                 users = JSON.parse(File.read(USERS_LOCATION))
-                users << { 'username' => username, 'password' => sha256(password) }
+                raise "A user with the same username already exists" if users.find { |user| user['username'] == user_data['username'] }
+
+                #Change the password to sha256
+                user_data['password'] = sha256(user_data['password'])
+        
+                users << user_data
                 File.write(USERS_LOCATION, users.to_json)
                 return true
             rescue Exception => e

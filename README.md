@@ -72,15 +72,15 @@ The values of the environment variables are as follows:
     end
 
     post '/clear' do
-        clearSession! #=> Clear all the session data
+        clear_session! #=> Clear all the session data
     end
 
     post '/save' do
-        setSessionData!('favorite_color', 'red') #=> Save the color in the cookie
+        set_session_data!('favorite_color', 'red') #=> Save the color in the cookie
     end
 
     post '/retrieve' do
-        p color = getSessionData!('favorite_color') #=> 'red'
+        p color = get_session_data!('favorite_color') #=> 'red'
     end
 
     get '/whoami' do
@@ -130,13 +130,13 @@ The values of the environment variables are as follows:
 ### `clearSession!`
 - Description: Clear all the session data.
 
-### `setSessionData!(key, value)`
+### `set_session_data!(key, value)`
 - Description: Sets a value in the session using the provided key.
 - Parameters:
   - `key`: The key under which to store the value.
   - `value`: Value to set in the session.
 
-### `getSessionData!(key)`
+### `get_session_data!(key)`
 - Description: Retrieves a value from the session using the provided key.
 - Parameters:
   - `key`: The key of the value to retrieve.
@@ -146,12 +146,11 @@ The values of the environment variables are as follows:
 - Description: Retrieves the user object from the users file based on the session key. STRICT must be set to true.
 - Returns: The user object corresponding to the `SESSION_KEY`.
 
-### `addUsers!(username, password)`
-- Description: Add a user to the users file.
+### `add_user!(user_data)`
+- Description: Add a user to the users file. Will encrypt the password using the SHA_KEY.
 - Parameters:
-  - `username`: The username of the user to add.
-  - `password`: The password of the user to add.
-- Returns: `true` if the user was successfully added, otherwise throw an error if couldnt read the file.
+    - `user`: A hash containing the user data. At least the `username` and `password` keys are required
+- Returns: `true` if the user was successfully added, otherwise throw an error if couldnt read the file or user already exist.
 
 
 ## Common Errors
