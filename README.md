@@ -81,7 +81,7 @@ The values of the environment variables are as follows:
     end
 
     post '/login' do #! Must contain username and password in basic auth request !#
-        p isSuccess = login!('admin123') #=> Try to login, will set the value to 'admin123' set in the unique SESSION_KEY if successful
+        p isSuccess = login!('joel') #=> Try to login, will set the value to  set in the unique SESSION_KEY if successful
     end
 
     post '/logout' do
@@ -103,6 +103,11 @@ The values of the environment variables are as follows:
     get '/whoami' do
         user = whoami? #=> {username: '...', ...}
         p user.nil? ? 'Guest' : user.to_json
+    end
+
+    post '/adduser' do
+        user = {'username': "joel", 'password': "Qwerty123@!"}
+        p isSuccess = add_user!(user)#=> Add a user to the database
     end
 
     get '/public' do
