@@ -57,8 +57,6 @@ module Sinatra
 
         def login!(value)
             return true unless session[SESSION_KEY].nil?
-
-            #no session, check for basic auth in the request
             raise "No value provided to set session" if value.nil?
 
             #check if basic auth is provided
