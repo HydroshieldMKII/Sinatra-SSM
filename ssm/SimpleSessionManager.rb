@@ -184,14 +184,19 @@ module Sinatra
 
         #Verification of core settings
         if STRICT_PASSWORD
-            PWD_MIN_PASSWORD_LENGTH || raise("PWD_MIN_PASSWORD_LENGTH not found in .env file")
-            PWD_MIN_SPECIAL_CHARS || raise("PWD_MIN_SPECIAL_CHARS not found in .env file")
-            PWD_MIN_NUMBERS || raise("PWD_MIN_NUMBERS not found in .env file")
+            PWD_MIN_PASSWORD_LENGTH || raise("PWD_MIN_PASSWORD_LENGTH not defined")
+            PWD_MIN_SPECIAL_CHARS || raise("PWD_MIN_SPECIAL_CHARS not defined")
+            PWD_MIN_NUMBERS || raise("PWD_MIN_NUMBERSnot defined")
         else
-            SHA_KEY || raise("SHA_KEY not found in .env file")
+            SHA_KEY || raise("SHA_KEY not defined")
         end
 
-        SESSION_SECRET || raise("SESSION_SECRET not found in .env file")
+        SESSION_KEY || raise("SESSION_KEY not defined")
+        COOKIE_NAME || raise("COOKIE_NAME not defined")
+        SESSION_SECRET || raise("SESSION_SECRET not defined")
+        SESSION_EXPIRE || raise("SESSION_EXPIRE not defined")
+        LOGIN_URL || raise("LOGIN_PATH not defined")
+
 
 
         #Check if the users file exists and it's json
@@ -204,7 +209,7 @@ module Sinatra
 
         #Setting up logging
         if LOGGING
-            LOG_FILE || raise("LOG_PATH not found in .env file")
+            LOG_FILE || raise("LOG_PATH not defined")
             log_file = File.new(LOG_FILE, 'a+')
             log_file.sync = true
             $logger = Logger.new(log_file)
