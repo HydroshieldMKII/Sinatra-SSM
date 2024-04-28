@@ -51,14 +51,13 @@ module Sinatra
         def login!(value)
             return true unless session[SESSION_KEY].nil?
 
-            #no session, check for basic auth in the request
             raise "No value provided to set session" if value.nil?
 
             #check if basic auth is provided
             auth = Rack::Auth::Basic::Request.new(request.env) 
             return false unless auth.provided? && auth.basic? && auth.credentials
 
-            #Check if the credentials are correct
+            #Check if the credentials match
             username, password = auth.credentials
             userInfo = authenticate(username, password)
 
@@ -105,6 +104,7 @@ module Sinatra
         def add_user!(user_data)
             raise "No data provided" if user_data.nil?
             raise "The data provided is not a hash" unless user_data.is_a? Hash
+            raise "No username provided" if user_data['username'].nil?
             raise "No password provided" if user_data['password'].nil?
 
             begin
