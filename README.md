@@ -1,6 +1,23 @@
 # Sinatra SSM
  Simple Session Manager designed for Ruby Sinatra. It use a JSON file to authenticate users, and a cookie to store the session. It also allows to store generic data in the session cookie.
 
+## Table of Contents
+- [Installation](#installation)
+- [Configuration](#configuration)
+- [Usage](#usage)
+- [Functions](#functions)
+    - [authorized?](#authorized)
+    - [authorize!](#authorize)
+    - [protected!](#protected)
+    - [login!](#login)
+    - [logout!](#logout)
+    - [clearSession!](#clearSession)
+    - [set_session_data!](#set_session_data)
+    - [get_session_data!](#get_session_data)
+    - [whoami?](#whoami)
+    - [add_user!](#add_user)
+- [Common Errors](#common-errors)
+
 ## Installation
 Clone the repository
 ```
