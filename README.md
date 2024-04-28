@@ -102,7 +102,7 @@ The values of the environment variables are as follows:
     end
 
     post '/login' do #! Must contain username and password in basic auth request !#
-        p isSuccess = login!('j7Bb9') #=> Careful ! Setting the wrong value may give access to another users data
+        p isSuccess = login!('j7Bb9') #=> Careful ! Must be a unique value between users (eg. username, session_key, user_id, etc.)
     end
 
     post '/logout' do
