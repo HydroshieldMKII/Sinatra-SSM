@@ -55,20 +55,27 @@ You must also configure the .env file with the preloaded environment variables:
     SESSION_KEY = 
     SESSION_SECRET = 
     SESSION_EXPIRE = 
+    USERS_PATH = 
+    LOG_FILE = 
     SHA_KEY = 
-    USERS_PATH =
-    LOGIN_URL =
-    LOG_PATH =
+    STRICT_PASSWORD = 
+    PWD_MIN_PASSWORD_LENGTH = 
+    PWD_MIN_SPECIAL_CHARS = 
+    PWD_MIN_NUMBERS = 
 ```
 The values of the environment variables are as follows:
 - COOKIE_NAME: The name of the cookie that will be used to store the session in the browser (eg. 'myapp.session').
 - SESSION_KEY: The unique key that will be used to identify users in your json file (eg. 'username' like in my exmple or 'user_id').
 - SESSION_SECRET: The secret key that will be used to encrypt the session. Must be at least 64 characters.
 - SESSION_EXPIRE: The time in seconds that the session will last.
-- SHA_KEY: The key that will be used to encrypt the passwords in the users.json file.
 - USERS_PATH: Full path to the location of the users.json file with 'username' and 'password' keys.
 - LOGIN_URL: Full path to the location of the login page (eg. '/login').
 - LOG_PATH: Full path to the location of the log file.
+- SHA_KEY: The key that will be used to encrypt the passwords in the users.json file.
+- STRICT_PASSWORD: If true, will use stronger encryption for the passwords. It will also require the password to have at least PWD_MIN_PASSWORD_LENGTH characters, PWD_MIN_SPECIAL_CHARS special characters and PWD_MIN_NUMBERS numbers.
+- PWD_MIN_PASSWORD_LENGTH: The minimum length of the password.
+- PWD_MIN_SPECIAL_CHARS: The minimum number of special characters in the password.
+- PWD_MIN_NUMBERS: The minimum number of numbers in the password.
 
 ## Usage
 ```ruby
