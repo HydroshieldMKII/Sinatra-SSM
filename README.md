@@ -178,7 +178,7 @@ The values of the environment variables are as follows:
 - Returns: The user object corresponding to the `SESSION_KEY`.
 
 ### `add_user!(user_data)`
-- Description: Add a user to the users file. Will encrypt the password using the SHA_KEY.
+- Description: Add a user to the users file. Will encrypt the password using the `STRICT_PASSWORD` method.
 - Parameters:
     - `user`: A hash containing the user data. At least the `username` and `password` keys are required
 - Returns: `true` if the user was successfully added, otherwise throw an error if couldnt read the file or user already exist.
