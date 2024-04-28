@@ -41,11 +41,13 @@ To configure the SimpleSessionManager, you must have a JSON file with at least t
 [
     {
         "username": "admin123",
-        "password": "8c6976e5b5410415bde908bd4dee15dfb167a9c873fc4bb8a81f6f2ab448a918"
+        "password": "8c6976e5b5410415bde908bd4dee15dfb167a9c873fc4bb8a81f6f2ab448a918",
+        "session_key": "j7Bb9" //optional if you use 'username' as session key
     },
     {
         "username": "user",
-        "password": "04f8996da763b7a969b1028ee3007569eaf3a635486ddab211d512c85b9df8fb"
+        "password": "04f8996da763b7a969b1028ee3007569eaf3a635486ddab211d512c85b9df8fb",
+        "session_key": "4uTN4" //optional if you use 'username' as session key
     }
 ]
 ```
@@ -65,7 +67,7 @@ You must also configure the .env file with the preloaded environment variables:
 ```
 The values of the environment variables are as follows:
 - COOKIE_NAME: The name of the cookie that will be used to store the session in the browser (eg. 'myapp.session').
-- SESSION_KEY: The unique key that will be used to identify users in your json file (eg. 'username' like in my exmple or 'user_id').
+- SESSION_KEY: The unique key that will be used to identify users in your json file (eg. 'username', 'session_key', 'user_id', etc).
 - SESSION_SECRET: The secret key that will be used to encrypt the session. Must be at least 64 characters.
 - SESSION_EXPIRE: The time in seconds that the session will last.
 - USERS_PATH: Full path to the location of the users.json file with 'username' and 'password' keys.
@@ -88,7 +90,7 @@ The values of the environment variables are as follows:
     end
 
     post '/login' do #! Must contain username and password in basic auth request !#
-        p isSuccess = login!('joel') #=> Try to login, will set the value to  set in the unique SESSION_KEY if successful
+        p isSuccess = login!('j7Bb9') #=> Careful ! Setting the wrong value may give access to another users data
     end
 
     post '/logout' do
@@ -114,7 +116,7 @@ The values of the environment variables are as follows:
 
     post '/adduser' do
         user = {'username': "joel", 'password': "Qwerty123@!"}
-        p isSuccess = add_user!(user)#=> Add a user to the database
+        p isSuccess = add_user!(user) #=> Add a user to the database and encrypt the password
     end
 
     get '/public' do
