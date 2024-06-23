@@ -98,12 +98,12 @@ The values of the environment variables are as follows:
     require_relative 'ssm'
 
     get '/home' do
-        p isLoggedIn = protected! #=> Is logged in
-        p haveColor = protected!('favorite_color') #=> Have a favorite color set in the cookie
+        is_logged_in = protected! #=> Is logged in
+        have_color = protected!('favorite_color') #=> Have a favorite color set in the cookie
     end
 
     post '/login' do #! Must contain username and password in basic auth request !#
-        p isSuccess = login!('j7Bb9') #=> Careful ! Must be a unique value between users (eg. username, session_key, user_id, etc.)
+        is_success = login!('j7Bb9') #=> Careful ! Must be a unique value between users (eg. username, session_key, user_id, etc.)
     end
 
     post '/logout' do
@@ -119,30 +119,30 @@ The values of the environment variables are as follows:
     end
 
     post '/retrieve' do
-        p color = get_session_data!('favorite_color') #=> 'red'
+        color = get_session_data!('favorite_color') #=> 'red'
     end
 
     get '/whoami' do
         user = whoami? #=> {username: '...', ...}
-        p user.nil? ? 'Guest' : user.to_json
+        user.nil? ? 'Guest' : user.to_json
     end
 
     post '/adduser' do
         user = {'username': "joel", 'password': "Qwerty123@!"}
-        p is_success = add_user!(user) #=> Add a user to the database and encrypt the password
+        is_success = add_user!(user) #=> Add a user to the database and encrypt the password
     end
 
     get '/public' do
         if authorized?
-            p "Hi. I know you."
+            "Hi. I know you."
         else
-            p "Hi. We haven't met. <a href='/login'>Login, please.</a>"
+            "Hi. We haven't met. <a href='/login'>Login, please.</a>"
         end
     end
 
     get '/private' do
         authorize!
-        p 'You are logged in!'
+        'You are logged in!'
     end
 ```
 
@@ -158,13 +158,11 @@ The values of the environment variables are as follows:
 ### `protected!(key = SESSION_KEY)`
 - Description: Return the authentication status of the user. Also can specify a key to check in the session.
 - Parameters:
-  - `request`: The request object containing authentication credentials or specified data.
   - `key`: The key to check in the session (defaults to `SESSION_KEY`).
 
 ### `login!(value = nil)`
 - Description: Checks if a user is logged in and sets the session key if authentication is successful.
 - Parameters:
-  - `request`: The request object containing authentication credentials.
   - `value`: Optional value that must be included to set the session. Not required if the session key is already set.
 - Returns: `true` if the user is successfully logged in, otherwise `false`.
 
@@ -188,12 +186,12 @@ The values of the environment variables are as follows:
 
 ### `whoami?`
 - Description: Retrieves the user object from the users file based on the session key. STRICT must be set to true.
-- Returns: The user object corresponding to the `SESSION_KEY`.
+- Returns: The user object corresponding to the `SESSION_KEY` in users.json, otherwise `nil`
 
 ### `add_user!(user_data)`
 - Description: Add a user to the users file. Will encrypt the password using the `STRICT_PASSWORD` method.
 - Parameters:
-    - `user`: A hash containing the user data. At least the `username` and `password` keys are required
+    - `user_data`: A hash containing the user data. At least the `username` and `password` keys are required
 - Returns: `true` if the user was successfully added, otherwise throw an error if couldnt read the file or user already exist.
 
 
