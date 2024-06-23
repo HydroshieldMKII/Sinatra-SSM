@@ -196,8 +196,7 @@ module Sinatra
         SESSION_SECRET || raise("SESSION_SECRET not defined")
         SESSION_EXPIRE || raise("SESSION_EXPIRE not defined")
         LOGIN_URL || raise("LOGIN_PATH not defined")
-
-
+        USERS_LOCATION || raise("USERS_PATH not defined")
 
         #Check if the users file exists and it's json
         begin

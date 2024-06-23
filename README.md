@@ -42,12 +42,12 @@ To configure the SimpleSessionManager, you must have a JSON file with at least t
     {
         "username": "admin123",
         "password": "8c6976e5b5410415bde908bd4dee15dfb167a9c873fc4bb8a81f6f2ab448a918",
-        "session_key": "j7Bb9" //optional if you use 'username' as session key
+        "my_session_key": "j7Bb9" //optional if you use 'username' as session key
     },
     {
         "username": "user",
         "password": "04f8996da763b7a969b1028ee3007569eaf3a635486ddab211d512c85b9df8fb",
-        "session_key": "4uTN4" //optional if you use 'username' as session key
+        "my_session_key": "4uTN4" //optional if you use 'username' as session key
     }
 ]
 ```
