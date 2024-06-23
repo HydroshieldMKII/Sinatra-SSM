@@ -128,7 +128,7 @@ The values of the environment variables are as follows:
 
     post '/adduser' do
         user = {'username': "joel", 'password': "Qwerty123@!"}
-        p isSuccess = add_user!(user) #=> Add a user to the database and encrypt the password
+        p is_success = add_user!(user) #=> Add a user to the database and encrypt the password
     end
 
     get '/public' do
