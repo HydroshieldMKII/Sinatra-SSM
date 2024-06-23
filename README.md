@@ -57,8 +57,9 @@ You must also configure the .env file with the preloaded environment variables:
     SESSION_KEY = 
     SESSION_SECRET = 
     SESSION_EXPIRE = 
+    LOGIN_PATH =
     USERS_PATH = 
-    LOG_FILE = 
+    LOG_PATH = 
     SHA_KEY = 
     STRICT_PASSWORD = 
     PWD_MIN_PASSWORD_LENGTH = 
@@ -75,9 +76,9 @@ The values of the environment variables are as follows:
 
 - SESSION_EXPIRE: The time in seconds that the session will last.
 
-- USERS_PATH: Full path to the location of the users.json file with 'username' and 'password' keys.
+- LOGIN_PATH: Full path to the location of the login page (eg. '/login').
 
-- LOGIN_URL: Full path to the location of the login page (eg. '/login').
+- USERS_PATH: Full path to the location of the users.json file with 'username' and 'password' keys.
 
 - LOG_PATH: Full path to the location of the log file.
 
