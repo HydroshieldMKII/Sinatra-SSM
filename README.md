@@ -1,71 +1,85 @@
 # Sinatra SSM
- Simple Session Manager is a tool designed for Ruby Sinatra. It use a JSON file to authenticate users, and a cookie to store the session. It also allows to store generic data in the session cookie. 
+
+Simple Session Manager is a tool designed for Ruby Sinatra. It use a JSON file to authenticate users, and a cookie to store the session. It also allows to store generic data in the session cookie.
 
 ## Table of Contents
+
 - [Installation](#installation)
 - [Configuration](#configuration)
 - [Usage](#usage)
 - [Functions](#functions)
-    - [authorized?](#authorized)
-    - [authorize!](#authorize)
-    - [protected!](#protected)
-    - [login!](#login)
-    - [logout!](#logout)
-    - [clear_session!](#clear_session)
-    - [set_session_data!](#set_session_data)
-    - [get_session_data!](#get_session_data)
-    - [whoami?](#whoami)
-    - [add_user!](#add_user)
+  - [authorized?](#authorized)
+  - [authorize!](#authorize)
+  - [protected!](#protected)
+  - [login!](#login)
+  - [logout!](#logout)
+  - [clear_session!](#clear_session)
+  - [set_session_data!](#set_session_data)
+  - [get_session_data!](#get_session_data)
+  - [whoami?](#whoami)
+  - [add_user!](#add_user)
 - [Common Errors](#common-errors)
 
 ## Installation
+
 Clone the repository
+
 ```
     git clone https://github.com/HydroshieldMKII/Sinatra-SSM.git
 ```
+
 Enter the directory
+
 ```bash
     cd ssm
 ```
+
 Install the bundler gem and the dependencies
+
 ```bash
     sudo gem install bundler
 ```
+
 ```bash
     sudo bundle install
 ```
 
 ## Configuration
-To configure the SimpleSessionManager, you must have a JSON file with at least the following structure:
+
+To configure the SimpleSessionManager, you must have a JSON file with at least the following structure for your users:
+
 ```json
 [
-    {
-        "username": "admin123",
-        "password": "8c6976e5b5410415bde908bd4dee15dfb167a9c873fc4bb8a81f6f2ab448a918",
-        "my_session_key": "j7Bb9" //optional if you use 'username' as session key
-    },
-    {
-        "username": "user",
-        "password": "04f8996da763b7a969b1028ee3007569eaf3a635486ddab211d512c85b9df8fb",
-        "my_session_key": "4uTN4" //optional if you use 'username' as session key
-    }
+  {
+    "username": "admin123",
+    "password": "8c6976e5b5410415bde908bd4dee15dfb167a9c873fc4bb8a81f6f2ab448a918",
+    "my_session_key": "j7Bb9" //optional if you use 'username' as session key
+  },
+  {
+    "username": "user",
+    "password": "04f8996da763b7a969b1028ee3007569eaf3a635486ddab211d512c85b9df8fb",
+    "my_session_key": "4uTN4" //optional if you use 'username' as session key
+  }
 ]
 ```
+
 You must also configure the .env file with the preloaded environment variables:
+
 ```env
-    COOKIE_NAME = 
-    SESSION_KEY = 
-    SESSION_SECRET = 
-    SESSION_EXPIRE = 
+    COOKIE_NAME =
+    SESSION_KEY =
+    SESSION_SECRET =
+    SESSION_EXPIRE =
     LOGIN_PATH =
-    USERS_PATH = 
-    LOG_PATH = 
-    SHA_KEY = 
-    STRICT_PASSWORD = 
-    PWD_MIN_PASSWORD_LENGTH = 
-    PWD_MIN_SPECIAL_CHARS = 
-    PWD_MIN_NUMBERS = 
+    USERS_PATH =
+    LOG_PATH =
+    SHA_KEY =
+    STRICT_PASSWORD =
+    PWD_MIN_PASSWORD_LENGTH =
+    PWD_MIN_SPECIAL_CHARS =
+    PWD_MIN_NUMBERS =
 ```
+
 The values of the environment variables are as follows:
 
 - COOKIE_NAME: The name of the cookie that will be used to store the session in the browser (eg. 'myapp.session').
@@ -93,6 +107,7 @@ The values of the environment variables are as follows:
 - PWD_MIN_NUMBERS: The minimum number of numbers in the password.
 
 ## Usage
+
 ```ruby
     require 'sinatra'
     require_relative 'ssm'
@@ -103,15 +118,15 @@ The values of the environment variables are as follows:
     end
 
     post '/login' do #! Must contain username and password in basic auth request !#
-        is_success = login!('j7Bb9') #=> Careful ! Must be a unique value between users (eg. username, session_key, user_id, etc.)
+        is_success = login!('j7Bb9') #=> Set unique identifier for the session. Must be unique for each user!
     end
 
     post '/logout' do
-        logout! #=> Destroy the session key
+        logout! #=> Destroy the session key (logout)
     end
 
     post '/clear' do
-        clear_session! #=> Clear all the session data
+        clear_session! #=> Clear all the session data (logout + remove all session data)
     end
 
     post '/save' do
@@ -149,60 +164,65 @@ The values of the environment variables are as follows:
 ## Functions
 
 ### `authorized?`
+
 - Description: Check if the user is logged in.
 - Returns: `true` if the user is logged in, otherwise `false`.
 
 ### `authorize!`
+
 - Description: Redirects to the login page if the user is not logged in, otherwise do nothing.
 
 ### `protected!(key = SESSION_KEY)`
+
 - Description: Return the authentication status of the user. Also can specify a key to check in the session.
 - Parameters:
   - `key`: The key to check in the session (defaults to `SESSION_KEY`).
 
 ### `login!(value = nil)`
+
 - Description: Checks if a user is logged in and sets the session key if authentication is successful.
 - Parameters:
   - `value`: Optional value that must be included to set the session. Not required if the session key is already set.
 - Returns: `true` if the user is successfully logged in, otherwise `false`.
 
 ### `logout!`
+
 - Description: Remove the session key.
 
 ### `clear_session!`
+
 - Description: Clear all the session data.
 
 ### `set_session_data!(key, value)`
+
 - Description: Sets a value in the session using the provided key.
 - Parameters:
   - `key`: The key under which to store the value.
   - `value`: Value to set in the session.
 
 ### `get_session_data!(key)`
+
 - Description: Retrieves a value from the session using the provided key.
 - Parameters:
   - `key`: The key of the value to retrieve.
 - Returns: The value associated with the provided key in the session.
 
 ### `whoami?`
+
 - Description: Retrieves the user object from the users file based on the session key. STRICT must be set to true.
 - Returns: The user object corresponding to the `SESSION_KEY` in users.json, otherwise `nil`
 
 ### `add_user!(user_data)`
+
 - Description: Add a user to the users file. Will encrypt the password using the `STRICT_PASSWORD` method.
 - Parameters:
-    - `user_data`: A hash containing the user data. At least the `username` and `password` keys are required
+  - `user_data`: A hash containing the user data. At least the `username` and `password` keys are required
 - Returns: `true` if the user was successfully added, otherwise throw an error if couldnt read the file or user already exist.
 
-
 ## Common Errors
+
 - The login doesnt work: Make sure that the `users.json` file is correctly configured and that the `SHA_KEY` is correct (must be the same key that was used to encrypt the current password) if you dont use `STRICT_PASSWORD`. Also make sure that the request contains the username and password in the basic auth header.
 
 - Variable not found in the .env file: Make sure that the .env file is correctly configured at the root of the project and that the environment variables are correctly set. Some of the variables are required for the correct operation of the SimpleSessionManager. Non required variables can be left empty and will have default value.
 
 - The session is not being stored: Make sure that the that the `SESSION_SECRET` is correctly set. Also make sure that the `SESSION_EXPIRE` is correctly set. Using private browsing, incognito mode or clearing browser cache can also cause the session to not be stored.
-
-
-
-    
-
