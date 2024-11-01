@@ -156,7 +156,7 @@ The values of the environment variables are as follows:
     end
 
     get '/private' do
-        authorize!
+        authorize! # Redirect to login if not logged in
         'You are logged in!'
     end
 ```
