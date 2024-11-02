@@ -46,7 +46,7 @@ Install the bundler gem and the dependencies
 
 ## Configuration
 
-To configure the SimpleSessionManager, you must have a JSON file with at least the following structure for your users:
+You must have a JSON file with at least the following structure for your users:
 
 ```json
 [
