@@ -1,6 +1,6 @@
 # Sinatra SSM
 
-Simple Session Manager is a tool designed for Ruby Sinatra. It use a JSON file to authenticate users, and a cookie to store the session. It also allows to store generic data in the session cookie.
+Session Storage Manager is a tool designed for Ruby Sinatra. It use a JSON file to authenticate users, and a cookie to store the session. It also allows to store generic data in the session cookie.
 
 ## Table of Contents
 
