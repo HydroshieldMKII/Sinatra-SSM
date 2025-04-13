@@ -82,29 +82,29 @@ You must also configure the .env file with the preloaded environment variables:
 
 The values of the environment variables are as follows:
 
-- COOKIE_NAME: The name of the cookie that will be used to store the session in the browser (eg. 'myapp.session').
+- **COOKIE_NAME**: The name of the cookie that will be used to store the session in the browser (eg. 'myapp.session').
 
-- SESSION_KEY: The unique key that will be used to identify users in your json file (eg. 'username', 'session_key', 'user_id', etc).
+- **SESSION_KEY**: The unique key that will be used to identify users in your json file (eg. 'username', 'session_key', 'user_id', etc).
 
-- SESSION_SECRET: The secret key that will be used to encrypt the session. Must be at least 64 characters.
+- **SESSION_SECRET**: The secret key that will be used to encrypt the session. Must be at least 64 characters.
 
-- SESSION_EXPIRE: The time in seconds that the session will last.
+- **SESSION_EXPIRE**: The time in seconds that the session will last.
 
-- LOGIN_PATH: Full path to the location of the login page (eg. '/login').
+- **LOGIN_PATH**: Full path to the location of the login page (eg. '/login').
 
-- USERS_PATH: Full path to the location of the users.json file with 'username' and 'password' keys.
+- **USERS_PATH**: Full path to the location of the users.json file with 'username' and 'password' keys.
 
-- LOG_PATH: Full path to the location of the log file.
+- **LOG_PATH**: Full path to the location of the log file.
 
-- SHA_KEY: The key that will be used to encrypt the passwords in the users.json file.
+- **SHA_KEY**: The key that will be used to encrypt the passwords in the users.json file.
 
-- STRICT_PASSWORD: If true, will use bcrpyt instead of sha256 for the password hashing. It will also require the password to have at least PWD_MIN_PASSWORD_LENGTH characters, PWD_MIN_SPECIAL_CHARS special characters and PWD_MIN_NUMBERS numbers.
+- **STRICT_PASSWORD**: If true, will use bcrpyt instead of sha256 for the password hashing. It will also require the password to have at least PWD_MIN_PASSWORD_LENGTH characters, PWD_MIN_SPECIAL_CHARS special characters and PWD_MIN_NUMBERS numbers.
 
-- PWD_MIN_PASSWORD_LENGTH: The minimum length of the password.
+- **PWD_MIN_PASSWORD_LENGTH**: The minimum length of the password.
 
-- PWD_MIN_SPECIAL_CHARS: The minimum number of special characters in the password.
+- **PWD_MIN_SPECIAL_CHARS**: The minimum number of special characters in the password.
 
-- PWD_MIN_NUMBERS: The minimum number of numbers in the password.
+- **PWD_MIN_NUMBERS**: The minimum number of numbers in the password.
 
 ## Usage
 
@@ -114,7 +114,7 @@ The values of the environment variables are as follows:
 
     get '/home' do
         is_logged_in = protected! #=> Is logged in
-        have_color = protected!('favorite_color') #=> Have a favorite color set in the cookie
+        have_color = protected!('favorite_color') #=> Have a value (cookie) with the key 'favorite_color'
     end
 
     post '/login' do #! Must contain username and password in basic auth request !#
