@@ -1,8 +1,0 @@
-# For SimpleSessionManager
-source 'https://rubygems.org'
-
-gem 'rack-session'
-gem 'bcrypt'
-gem 'dotenv'
-gem 'logger'
-gem 'json'

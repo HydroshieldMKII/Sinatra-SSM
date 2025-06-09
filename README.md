@@ -1,228 +1,333 @@
-# Sinatra SSM
+# Sinatra Session Manager
 
-Session Storage Manager is a tool designed for Ruby Sinatra. It use a JSON file to authenticate users, and a cookie to store the session. It also allows to store generic data in the session cookie.
+A secure session management system for Ruby Sinatra applications featuring BCrypt password hashing, CSRF protection, account lockout, and thread-safe JSON user storage.
 
 ## Table of Contents
 
 - [Installation](#installation)
 - [Configuration](#configuration)
 - [Usage](#usage)
-- [Functions](#functions)
-  - [authorized?](#authorized)
-  - [authorize!](#authorize)
-  - [protected!](#protected)
-  - [login!](#login)
+- [API Reference](#api-reference)
+  - [authenticated?](#authenticated)
+  - [authenticate!](#authenticate)
+  - [require_authentication!](#require_authentication)
+  - [current_user](#current_user)
   - [logout!](#logout)
-  - [clear_session!](#clear_session)
-  - [set_session_data!](#set_session_data)
-  - [get_session_data!](#get_session_data)
-  - [whoami?](#whoami)
-  - [add_user!](#add_user)
-- [Common Errors](#common-errors)
+  - [create_user](#create_user)
+  - [csrf_token](#csrf_token)
+  - [verify_csrf_token!](#verify_csrf_token)
+- [Security Features](#security-features)
+- [Common Issues](#common-issues)
 
 ## Installation
 
 Clone the repository
 
-```
-    git clone https://github.com/HydroshieldMKII/Sinatra-SSM.git
+```bash
+git clone https://github.com/HydroshieldMKII/Sinatra-SSM.git
+cd Sinatra-SSM
 ```
 
-Enter the directory
+Install dependencies
 
 ```bash
-    cd ssm
+bundle install
 ```
 
-Install the bundler gem and the dependencies
-
-```bash
-    sudo gem install bundler
-```
-
-```bash
-    sudo bundle install
-```
+Required gems:
+- sinatra
+- bcrypt
+- rack-session
 
 ## Configuration
 
-You must have a JSON file with at least the following structure for your users:
+### JSON User Storage
+
+Users are stored in a JSON file with the following structure:
 
 ```json
 [
   {
-    "username": "admin123",
-    "password": "8c6976e5b5410415bde908bd4dee15dfb167a9c873fc4bb8a81f6f2ab448a918",
-    "my_session_key": "j7Bb9" //optional if you use 'username' as session key
-  },
-  {
-    "username": "user",
-    "password": "04f8996da763b7a969b1028ee3007569eaf3a635486ddab211d512c85b9df8fb",
-    "my_session_key": "4uTN4" //optional if you use 'username' as session key
+    "id": "550e8400-e29b-41d4-a716-446655440000",
+    "username": "admin",
+    "password_hash": "$2a$12$...",
+    "created_at": 1703001600,
+    "failed_attempts": 0,
+    "locked_until": null,
+    "last_login": 1703088000
   }
 ]
 ```
 
-You must also configure the .env file with the preloaded environment variables:
+### Configuration Options
 
-```env
-    COOKIE_NAME =
-    SESSION_KEY =
-    SESSION_SECRET =
-    SESSION_EXPIRE =
-    LOGIN_PATH =
-    USERS_PATH =
-    LOG_PATH =
-    SHA_KEY =
-    STRICT_PASSWORD =
-    PWD_MIN_PASSWORD_LENGTH =
-    PWD_MIN_SPECIAL_CHARS =
-    PWD_MIN_NUMBERS =
+Configure the session manager in your Sinatra app:
+
+```ruby
+configure do
+  session_config.session_secret = ENV['SESSION_SECRET'] || SecureRandom.hex(64)
+  session_config.users_store = ENV['USERS_PATH'] || 'users.json'
+  session_config.cookie_name = 'my_app.session'
+  session_config.session_expire = 86400  # 24 hours
+  session_config.login_path = '/login'
+  session_config.bcrypt_cost = 12
+  session_config.min_password_length = 12
+  session_config.max_failed_attempts = 5
+  session_config.lockout_duration = 900  # 15 minutes
+  session_config.session_rotation = true
+  session_config.csrf_protection = true
+  session_config.validate!
+end
 ```
-
-The values of the environment variables are as follows:
-
-- **COOKIE_NAME**: The name of the cookie that will be used to store the session in the browser (eg. 'myapp.session').
-
-- **SESSION_KEY**: The unique key that will be used to identify users in your json file (eg. 'username', 'session_key', 'user_id', etc).
-
-- **SESSION_SECRET**: The secret key that will be used to encrypt the session. Must be at least 64 characters.
-
-- **SESSION_EXPIRE**: The time in seconds that the session will last.
-
-- **LOGIN_PATH**: Full path to the location of the login page (eg. '/login').
-
-- **USERS_PATH**: Full path to the location of the users.json file with 'username' and 'password' keys.
-
-- **LOG_PATH**: Full path to the location of the log file.
-
-- **SHA_KEY**: The key that will be used to encrypt the passwords in the users.json file.
-
-- **STRICT_PASSWORD**: If true, will use bcrpyt instead of sha256 for the password hashing. It will also require the password to have at least PWD_MIN_PASSWORD_LENGTH characters, PWD_MIN_SPECIAL_CHARS special characters and PWD_MIN_NUMBERS numbers.
-
-- **PWD_MIN_PASSWORD_LENGTH**: The minimum length of the password.
-
-- **PWD_MIN_SPECIAL_CHARS**: The minimum number of special characters in the password.
-
-- **PWD_MIN_NUMBERS**: The minimum number of numbers in the password.
 
 ## Usage
 
+### Basic Setup
+
 ```ruby
-    require 'sinatra'
-    require_relative 'ssm'
+require 'sinatra/base'
+require_relative 'SimpleSessionManager'
 
-    get '/home' do
-        is_logged_in = protected! #=> Is logged in
-        have_color = protected!('favorite_color') #=> Have a value (cookie) with the key 'favorite_color'
+class App < Sinatra::Base
+  register Sinatra::SessionManager
+  
+  configure do
+    session_config.session_secret = SecureRandom.hex(64)
+    session_config.users_store = 'users.json'
+    session_config.validate!
+    
+    use Rack::Session::Cookie,
+        key: session_config.cookie_name,
+        secret: session_config.session_secret,
+        expire_after: session_config.session_expire,
+        httponly: true,
+        secure: production?,
+        same_site: :lax
+  end
+  
+  get '/login' do
+    erb :login, locals: { csrf_token: csrf_token }
+  end
+  
+  post '/login' do
+    if authenticate!(params[:username], params[:password])
+      redirect '/dashboard'
+    else
+      status 401
+      erb :login, locals: { 
+        error_message: 'Invalid credentials or account locked', 
+        csrf_token: csrf_token 
+      }
     end
-
-    post '/login' do #! Must contain username and password in basic auth request !#
-        is_success = login!('j7Bb9') #=> Set user id for the session. Must be unique for each user!
+  end
+  
+  get '/dashboard' do
+    require_authentication!
+    erb :dashboard
+  end
+  
+  post '/logout' do
+    logout!
+    redirect '/login'
+  end
+  
+  post '/users' do
+    require_authentication!
+    
+    begin
+      user = create_user(params[:username], params[:password])
+      json id: user['id'], username: user['username']
+    rescue => e
+      status 400
+      json error: e.message
     end
-
-    post '/logout' do
-        logout! #=> Destroy the session key (logout)
-    end
-
-    post '/clear' do
-        clear_session! #=> Clear all the session data (logout + remove all session data)
-    end
-
-    post '/save' do
-        set_session_data!('favorite_color', 'red') #=> Save the color in the cookie
-    end
-
-    post '/retrieve' do
-        color = get_session_data!('favorite_color') #=> 'red'
-    end
-
-    get '/whoami' do
-        user = whoami? #=> {username: '...', ...}
-        user.nil? ? 'Guest' : user.to_json
-    end
-
-    post '/adduser' do
-        user = {'username': "joel", 'password': "Qwerty123@!"}
-        is_success = add_user!(user) #=> Add a user to the database and encrypt the password
-    end
-
-    get '/public' do
-        if authorized?
-            "Hi. I know you."
-        else
-            "Hi. We haven't met. <a href='/login'>Login, please.</a>"
-        end
-    end
-
-    get '/private' do
-        authorize! # Redirect to login if not logged in
-        'You are logged in!'
-    end
+  end
+end
 ```
 
-## Functions
+### Classic Sinatra Style
 
-### `authorized?`
+```ruby
+require 'sinatra'
+require_relative 'SimpleSessionManager'
 
-- Description: Check if the user is logged in.
-- Returns: `true` if the user is logged in, otherwise `false`.
+register Sinatra::SessionManager
 
-### `authorize!`
+configure do
+  settings.session_config.session_secret = SecureRandom.hex(64)
+  settings.session_config.users_store = 'users.json'
+  settings.session_config.validate!
+  
+  use Rack::Session::Cookie,
+      key: settings.session_config.cookie_name,
+      secret: settings.session_config.session_secret,
+      expire_after: settings.session_config.session_expire,
+      httponly: true,
+      secure: production?,
+      same_site: :lax
+end
 
-- Description: Redirects to the login page if the user is not logged in, otherwise do nothing.
+# Routes here...
+```
 
-### `protected!(key = SESSION_KEY)`
+## API Reference
 
-- Description: Return the authentication status of the user. Also can specify a key to check in the session.
-- Parameters:
-  - `key`: The key to check in the session (defaults to `SESSION_KEY`).
+### `authenticated?`
 
-### `login!(value = nil)`
+Check if the current user is authenticated.
 
-- Description: Checks if a user is logged in and sets the session key if authentication is successful.
-- Parameters:
-  - `value`: Optional value that must be included to set the session. Not required if the session key is already set.
-- Returns: `true` if the user is successfully logged in, otherwise `false`.
+```ruby
+get '/' do
+  if authenticated?
+    redirect '/dashboard'
+  else
+    redirect '/login'
+  end
+end
+```
+
+### `authenticate!(username, password)`
+
+Authenticate a user with username and password. Returns `true` on success, `false` on failure.
+
+```ruby
+post '/login' do
+  if authenticate!(params[:username], params[:password])
+    redirect '/dashboard'
+  else
+    status 401
+    'Invalid credentials'
+  end
+end
+```
+
+### `require_authentication!`
+
+Require authentication for a route. Redirects to login page if not authenticated.
+
+```ruby
+get '/admin' do
+  require_authentication!
+  'Admin panel'
+end
+```
+
+### `current_user`
+
+Get the current authenticated user (without password hash).
+
+```ruby
+get '/profile' do
+  require_authentication!
+  user = current_user
+  erb :profile, locals: { user: user }
+end
+```
 
 ### `logout!`
 
-- Description: Remove the session key.
+Clear the session and log out the user.
 
-### `clear_session!`
+```ruby
+post '/logout' do
+  logout!
+  redirect '/login'
+end
+```
 
-- Description: Clear all the session data.
+### `create_user(username, password)`
 
-### `set_session_data!(key, value)`
+Create a new user with validated password.
 
-- Description: Sets a value in the session using the provided key.
-- Parameters:
-  - `key`: The key under which to store the value.
-  - `value`: Value to set in the session.
+```ruby
+post '/register' do
+  begin
+    user = create_user(params[:username], params[:password])
+    'User created successfully'
+  rescue => e
+    status 400
+    e.message
+  end
+end
+```
 
-### `get_session_data!(key)`
+### `csrf_token`
 
-- Description: Retrieves a value from the session using the provided key.
-- Parameters:
-  - `key`: The key of the value to retrieve.
-- Returns: The value associated with the provided key in the session.
+Get the current CSRF token for forms.
 
-### `whoami?`
+```ruby
+<form method="post" action="/login">
+  <input type="hidden" name="csrf_token" value="<%= csrf_token %>">
+  <!-- form fields -->
+</form>
+```
 
-- Description: Retrieves the user object from the users file based on the session key. STRICT must be set to true.
-- Returns: The user object corresponding to the `SESSION_KEY` in users.json, otherwise `nil`
+### `verify_csrf_token!`
 
-### `add_user!(user_data)`
+Automatically called before each request to verify CSRF tokens on non-GET requests.
 
-- Description: Add a user to the users file. Will encrypt the password using the `STRICT_PASSWORD` method.
-- Parameters:
-  - `user_data`: A hash containing the user data. At least the `username` and `password` keys are required
-- Returns: `true` if the user was successfully added, otherwise throw an error if couldnt read the file or user already exist.
+## Security Features
 
-## Common Errors
+### Password Requirements
 
-- The login doesnt work: Make sure that the `users.json` file is correctly configured and that the `SHA_KEY` is correct (must be the same key that was used to encrypt the current password) if you dont use `STRICT_PASSWORD`. Also make sure that the request contains the username and password in the basic auth header.
+- Minimum 12 characters (configurable)
+- Must contain uppercase letter
+- Must contain lowercase letter
+- Must contain digit
+- Must contain special character
 
-- Variable not found in the .env file: Make sure that the .env file is correctly configured at the root of the project and that the environment variables are correctly set. Some of the variables are required for the correct operation of the Session Storage Manager. Non required variables can be left empty and will have default value.
+### Account Lockout
 
-- The session is not being stored: Make sure that the that the `SESSION_SECRET` is correctly set. Also make sure that the `SESSION_EXPIRE` is correctly set. Using private browsing, incognito mode or clearing browser cache can also cause the session to not be stored or cleared.
+After 5 failed login attempts (configurable), the account is locked for 15 minutes.
+
+### Session Security
+
+- Secure, httponly cookies
+- Session rotation on login
+- CSRF protection
+- Configurable session expiration
+
+### Thread Safety
+
+The UserStore uses Monitor mixin for thread-safe file operations.
+
+## Common Issues
+
+### CSRF Token Mismatch
+
+Ensure all forms include the CSRF token:
+
+```erb
+<% if csrf_token %>
+  <input type="hidden" name="csrf_token" value="<%= csrf_token %>">
+<% end %>
+```
+
+### Session Not Persisting
+
+Check that:
+- `SESSION_SECRET` is at least 64 characters
+- Cookies are enabled in the browser
+- Not using incognito/private browsing
+- `secure: true` is not set in development (HTTP)
+
+### User Creation Failing
+
+Common password validation errors:
+- "Password too short" - Needs 12+ characters
+- "Password requires digit" - Add a number
+- "Password requires uppercase" - Add an uppercase letter
+- "Password requires lowercase" - Add a lowercase letter
+- "Password requires special character" - Add !@#$%^&* etc.
+
+### Classic vs Modular Sinatra
+
+Classic style requires `settings.session_config`:
+```ruby
+settings.session_config.session_secret = '...'
+```
+
+Modular style uses `session_config` directly:
+```ruby
+session_config.session_secret = '...'
+```

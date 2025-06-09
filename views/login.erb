@@ -1,0 +1,14 @@
+<div class="container">
+  <h2>Login</h2>
+  <% if local_variables.include?(:error_message) && error_message %>
+    <div class="error"><%= error_message %></div>
+  <% end %>
+  <form method="post" action="/login">
+    <% if csrf_token %>
+      <input type="hidden" name="csrf_token" value="<%= csrf_token %>">
+    <% end %>
+    <input type="text" name="username" placeholder="Username" required autofocus>
+    <input type="password" name="password" placeholder="Password" required>
+    <button type="submit">Login</button>
+  </form>
+</div>
